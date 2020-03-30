@@ -8,9 +8,16 @@
         if (isset($_POST['submit'])) {
             $username = $_POST['username'];
             $password = $_POST['password'];
+
+            // Data clensing to disable SQL-injection.
+            $username = mysqli_real_escape_string($connection, $username);
+            $password = mysqli_real_escape_string($connection, $password);
     
+            // Password hashing
+            $hashedPwd = password_hash($password, PASSWORD_BCRYPT);
+
             $query = "INSERT INTO users (username, password) ";
-            $query .= "VALUES ('$username', '$password')";
+            $query .= "VALUES ('$username', '$hashedPwd')";
     
             $result = mysqli_query($connection, $query);
     
@@ -20,7 +27,7 @@
             } else {
                 echo "New user created.";
                 echo "<br> Username: $username";
-                echo "<br> Password: $password";
+                echo "<br> Password: $hashedPwd";
             }
         }
     }
